@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Educational C2 Demo</title>
+
+<title>Educational C2 Simulator</title>
 
 <style>
 * {
@@ -13,15 +14,17 @@
 body {
     margin: 0;
     font-family: Arial, Tahoma, sans-serif;
-    background: #10151c;
+    background: #0d131a;
     color: #e8edf3;
 }
 
+/* HEADER */
+
 .header {
-    background: #18212b;
+    background: #17212b;
+    border-bottom: 1px solid #303c48;
     padding: 18px;
     text-align: center;
-    border-bottom: 1px solid #303b47;
 }
 
 .header h1 {
@@ -31,41 +34,83 @@ body {
 
 .header p {
     margin: 7px 0 0;
-    color: #9eabb8;
+    color: #93a1ae;
 }
 
+/* NAVIGATION */
+
+.nav {
+    background: #121a22;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border-bottom: 1px solid #303c48;
+}
+
+.nav button {
+    background: #263542;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.nav button:hover {
+    background: #31506a;
+}
+
+.nav button.active {
+    background: #2867b2;
+}
+
+/* CONTENT */
+
 .container {
-    max-width: 1100px;
+    max-width: 1150px;
     margin: auto;
     padding: 20px;
 }
 
 .warning {
     background: #2a2110;
-    border: 1px solid #71551b;
+    border: 1px solid #70551b;
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 20px;
     color: #f0cf76;
 }
 
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+/* DASHBOARD */
+
 .dashboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns:
+        repeat(auto-fit, minmax(210px, 1fr));
     gap: 15px;
     margin-bottom: 20px;
 }
 
 .card {
-    background: #18212b;
-    border: 1px solid #303b47;
+    background: #18222c;
+    border: 1px solid #303c48;
     border-radius: 10px;
     padding: 18px;
 }
 
 .card h3 {
     margin-top: 0;
-    color: #aebbc8;
+    color: #aab7c4;
 }
 
 .number {
@@ -81,9 +126,11 @@ body {
     color: #ef7272;
 }
 
+/* PANELS */
+
 .panel {
-    background: #18212b;
-    border: 1px solid #303b47;
+    background: #18222c;
+    border: 1px solid #303c48;
     border-radius: 10px;
     padding: 18px;
     margin-bottom: 20px;
@@ -93,16 +140,18 @@ body {
     margin-top: 0;
 }
 
+/* CLIENTS */
+
 .clients {
     display: grid;
-    gap: 10px;
+    gap: 12px;
 }
 
 .client {
-    background: #111820;
-    border: 1px solid #303b47;
-    border-radius: 8px;
-    padding: 14px;
+    background: #101820;
+    border: 1px solid #303c48;
+    border-radius: 9px;
+    padding: 15px;
 }
 
 .client-top {
@@ -113,8 +162,8 @@ body {
 }
 
 .client-name {
+    font-size: 19px;
     font-weight: bold;
-    font-size: 18px;
 }
 
 .badge {
@@ -124,11 +173,18 @@ body {
 }
 
 .badge.online {
-    background: #123a28;
+    background: #123b29;
+    color: #65e5a0;
 }
 
 .badge.offline {
-    background: #3b2020;
+    background: #3c2020;
+    color: #f28b8b;
+}
+
+.info {
+    color: #9caab7;
+    line-height: 1.8;
 }
 
 .buttons {
@@ -149,268 +205,735 @@ button {
 }
 
 button:hover {
-    opacity: 0.85;
+    opacity: .85;
 }
 
 button.secondary {
-    background: #384653;
+    background: #3a4855;
 }
 
 button.danger {
     background: #8d3434;
 }
 
-input, textarea, select {
+button.green {
+    background: #24784f;
+}
+
+/* FORM */
+
+input,
+textarea,
+select {
     width: 100%;
-    background: #10151c;
+    background: #0e151c;
     color: white;
-    border: 1px solid #3a4652;
+    border: 1px solid #3a4754;
     border-radius: 7px;
     padding: 10px;
     margin-top: 7px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 textarea {
-    min-height: 90px;
+    min-height: 100px;
     resize: vertical;
 }
 
-.log {
-    background: #0b1015;
-    border-radius: 7px;
-    padding: 12px;
-    height: 220px;
-    overflow-y: auto;
-    font-family: monospace;
-    direction: ltr;
-    text-align: left;
-}
+/* PLUGINS */
 
-.log-line {
-    padding: 4px 0;
-    border-bottom: 1px solid #18212b;
+.plugin-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
 }
 
 .plugin {
-    background: #111820;
-    border: 1px solid #303b47;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 8px;
+    background: #101820;
+    border: 1px solid #303c48;
+    border-radius: 9px;
+    padding: 15px;
 }
+
+.plugin h3 {
+    margin-top: 0;
+}
+
+/* LOG */
+
+.log {
+    background: #080d12;
+    border-radius: 8px;
+    padding: 12px;
+    height: 250px;
+    overflow-y: auto;
+    direction: ltr;
+    text-align: left;
+    font-family: monospace;
+}
+
+.log-line {
+    padding: 5px 0;
+    border-bottom: 1px solid #18222c;
+}
+
+/* TABLE */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 11px;
+    border-bottom: 1px solid #303c48;
+    text-align: center;
+}
+
+th {
+    background: #111a22;
+}
+
+/* FOOTER */
 
 .footer {
     text-align: center;
     color: #71808e;
-    padding: 20px;
+    padding: 25px;
     font-size: 13px;
+}
+
+@media(max-width:600px) {
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    .nav button {
+        flex: 1 1 40%;
+    }
+
+    .client-top {
+        align-items: flex-start;
+    }
 }
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
+
 <div class="header">
+
     <h1>Educational C2 Simulator</h1>
-    <p>محاكاة تعليمية لبنية Client / Server / Plugins</p>
+
+    <p>
+        محاكاة تعليمية آمنة لبنية
+        Client / Server / Configuration / Plugins
+    </p>
+
 </div>
+
+
+<!-- NAVIGATION -->
+
+<div class="nav">
+
+    <button class="active"
+            onclick="showPage('home', this)">
+        🏠 الرئيسية
+    </button>
+
+    <button onclick="showPage('clients', this)">
+        🖥️ العملاء
+    </button>
+
+    <button onclick="showPage('plugins', this)">
+        🧩 Plugins
+    </button>
+
+    <button onclick="showPage('settings', this)">
+        ⚙️ الإعدادات
+    </button>
+
+    <button onclick="showPage('logs', this)">
+        📋 السجل
+    </button>
+
+</div>
+
 
 <div class="container">
 
-    <div class="warning">
-        ⚠️ هذه محاكاة تعليمية فقط. لا تتصل بأجهزة حقيقية ولا تجمع كلمات مرور أو بيانات شخصية.
-    </div>
+<div class="warning">
 
-    <div class="dashboard">
+⚠️ هذه محاكاة تعليمية فقط.
+لا تتصل بأجهزة حقيقية ولا تجمع كلمات مرور
+أو Cookies أو بيانات شخصية.
 
-        <div class="card">
-            <h3>إجمالي العملاء</h3>
-            <div class="number" id="totalClients">3</div>
-        </div>
-
-        <div class="card">
-            <h3>متصل الآن</h3>
-            <div class="number online" id="onlineClients">2</div>
-        </div>
-
-        <div class="card">
-            <h3>غير متصل</h3>
-            <div class="number offline" id="offlineClients">1</div>
-        </div>
-
-        <div class="card">
-            <h3>الأوامر المنفذة</h3>
-            <div class="number" id="commandCount">0</div>
-        </div>
-
-    </div>
-
-    <div class="panel">
-        <h2>🖥️ العملاء التجريبيون</h2>
-
-        <div class="clients">
-
-            <div class="client">
-                <div class="client-top">
-                    <div class="client-name">PC-001</div>
-                    <span class="badge online">ONLINE</span>
-                </div>
-
-                <p>Windows Demo Client</p>
-
-                <div class="buttons">
-                    <button onclick="sendCommand('PC-001','PING')">PING</button>
-                    <button onclick="sendCommand('PC-001','STATUS')">STATUS</button>
-                    <button class="secondary"
-                        onclick="messageClient('PC-001')">
-                        رسالة
-                    </button>
-                </div>
-            </div>
+</div>
 
 
-            <div class="client">
-                <div class="client-top">
-                    <div class="client-name">PC-002</div>
-                    <span class="badge online">ONLINE</span>
-                </div>
+<!-- ================= HOME ================= -->
 
-                <p>Linux Demo Client</p>
+<section id="home" class="page active">
 
-                <div class="buttons">
-                    <button onclick="sendCommand('PC-002','PING')">PING</button>
-                    <button onclick="sendCommand('PC-002','STATUS')">STATUS</button>
-                    <button class="secondary"
-                        onclick="messageClient('PC-002')">
-                        رسالة
-                    </button>
-                </div>
-            </div>
+<div class="panel">
 
+<h2>
+📊 لوحة التحكم
+</h2>
 
-            <div class="client">
-                <div class="client-top">
-                    <div class="client-name">PC-003</div>
-                    <span class="badge offline">OFFLINE</span>
-                </div>
+<p class="info">
+مرحبًا بك في Educational C2 Simulator.
+هذه الواجهة تحاكي فكرة إدارة Clients
+وأوامر تعليمية داخل بيئة محلية.
+</p>
 
-                <p>Demo Client</p>
-
-                <div class="buttons">
-                    <button onclick="sendCommand('PC-003','PING')">PING</button>
-                    <button onclick="sendCommand('PC-003','STATUS')">STATUS</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
+</div>
 
 
-    <div class="panel">
+<div class="dashboard">
 
-        <h2>⚙️ Configuration</h2>
+<div class="card">
 
-        <label>اسم المحاكاة</label>
-        <input id="simName" value="Educational C2">
+<h3>إجمالي العملاء</h3>
 
-        <label>الفاصل الزمني للمحاكاة</label>
-        <select id="interval">
-            <option value="5">5 ثواني</option>
-            <option value="10" selected>10 ثواني</option>
-            <option value="30">30 ثانية</option>
-        </select>
+<div class="number"
+     id="totalClients">
+3
+</div>
 
-        <button onclick="saveConfig()">حفظ Configuration</button>
-
-    </div>
+</div>
 
 
-    <div class="panel">
+<div class="card">
 
-        <h2>🧩 Plugins</h2>
+<h3>متصل الآن</h3>
 
-        <div class="plugin">
-            <strong>Hello Plugin</strong>
-            <p>يعرض رسالة تعليمية.</p>
-            <button onclick="runPlugin('Hello Plugin')">
-                تشغيل
-            </button>
-        </div>
+<div class="number online"
+     id="onlineClients">
+2
+</div>
 
-        <div class="plugin">
-            <strong>Calculator Plugin</strong>
-            <p>محاكاة Plugin للحساب فقط.</p>
-            <button onclick="runPlugin('Calculator Plugin')">
-                تشغيل
-            </button>
-        </div>
-
-        <div class="plugin">
-            <strong>System Info Demo</strong>
-            <p>يعرض معلومات ثابتة وهمية.</p>
-            <button onclick="runPlugin('System Info Demo')">
-                تشغيل
-            </button>
-        </div>
-
-    </div>
+</div>
 
 
-    <div class="panel">
+<div class="card">
 
-        <h2>📋 سجل الأحداث</h2>
+<h3>غير متصل</h3>
 
-        <div class="log" id="log"></div>
+<div class="number offline"
+     id="offlineClients">
+1
+</div>
 
-        <br>
+</div>
 
-        <button class="danger" onclick="clearLog()">
-            مسح السجل
-        </button>
 
-    </div>
+<div class="card">
+
+<h3>الأوامر المنفذة</h3>
+
+<div class="number"
+     id="commandCount">
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+⚡ آخر النشاطات
+</h2>
+
+<div id="homeLog"
+     class="log">
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= CLIENTS ================= -->
+
+<section id="clients" class="page">
+
+<div class="panel">
+
+<h2>
+🖥️ العملاء التجريبيون
+</h2>
+
+<div class="clients">
+
+
+<!-- CLIENT 1 -->
+
+<div class="client">
+
+<div class="client-top">
+
+<div class="client-name">
+PC-001
+</div>
+
+<span class="badge online">
+ONLINE
+</span>
+
+</div>
+
+<div class="info">
+
+النظام: Windows Demo<br>
+الإصدار: 1.0<br>
+آخر اتصال: الآن
+
+</div>
+
+<div class="buttons">
+
+<button onclick="sendCommand('PC-001','PING')">
+PING
+</button>
+
+<button onclick="sendCommand('PC-001','STATUS')">
+STATUS
+</button>
+
+<button class="secondary"
+        onclick="messageClient('PC-001')">
+رسالة
+</button>
+
+</div>
+
+</div>
+
+
+<!-- CLIENT 2 -->
+
+<div class="client">
+
+<div class="client-top">
+
+<div class="client-name">
+PC-002
+</div>
+
+<span class="badge online">
+ONLINE
+</span>
+
+</div>
+
+<div class="info">
+
+النظام: Linux Demo<br>
+الإصدار: 1.0<br>
+آخر اتصال: الآن
+
+</div>
+
+<div class="buttons">
+
+<button onclick="sendCommand('PC-002','PING')">
+PING
+</button>
+
+<button onclick="sendCommand('PC-002','STATUS')">
+STATUS
+</button>
+
+<button class="secondary"
+        onclick="messageClient('PC-002')">
+رسالة
+</button>
+
+</div>
+
+</div>
+
+
+<!-- CLIENT 3 -->
+
+<div class="client">
+
+<div class="client-top">
+
+<div class="client-name">
+PC-003
+</div>
+
+<span class="badge offline">
+OFFLINE
+</span>
+
+</div>
+
+<div class="info">
+
+النظام: Demo Client<br>
+الإصدار: 1.0<br>
+آخر اتصال: منذ فترة
+
+</div>
+
+<div class="buttons">
+
+<button onclick="sendCommand('PC-003','PING')">
+PING
+</button>
+
+<button onclick="sendCommand('PC-003','STATUS')">
+STATUS
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= PLUGINS ================= -->
+
+<section id="plugins" class="page">
+
+<div class="panel">
+
+<h2>
+🧩 Plugins التعليمية
+</h2>
+
+<p class="info">
+هذه Plugins تجريبية فقط ولا تستطيع الوصول
+إلى كلمات المرور أو الملفات الخاصة.
+</p>
+
+
+<div class="plugin-grid">
+
+
+<div class="plugin">
+
+<h3>
+👋 Hello Plugin
+</h3>
+
+<p>
+Plugin يعرض رسالة تعليمية.
+</p>
+
+<button onclick="runPlugin('Hello Plugin')">
+تشغيل
+</button>
+
+</div>
+
+
+<div class="plugin">
+
+<h3>
+🧮 Calculator Plugin
+</h3>
+
+<p>
+محاكاة Plugin للحسابات.
+</p>
+
+<button onclick="runCalculator()">
+تشغيل
+</button>
+
+</div>
+
+
+<div class="plugin">
+
+<h3>
+💻 System Info Demo
+</h3>
+
+<p>
+يعرض معلومات ثابتة وهمية.
+</p>
+
+<button onclick="runPlugin('System Info Demo')">
+تشغيل
+</button>
+
+</div>
+
+
+<div class="plugin">
+
+<h3>
+🔄 Ping Plugin
+</h3>
+
+<p>
+اختبار استجابة Client تجريبي.
+</p>
+
+<button onclick="runPlugin('Ping Plugin')">
+تشغيل
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= SETTINGS ================= -->
+
+<section id="settings" class="page">
+
+<div class="panel">
+
+<h2>
+⚙️ Configuration
+</h2>
+
+<label>
+اسم المحاكاة
+</label>
+
+<input
+    id="simName"
+    value="Educational C2"
+>
+
+
+<label>
+الفاصل الزمني
+</label>
+
+<select id="interval">
+
+<option value="5">
+5 ثواني
+</option>
+
+<option value="10"
+        selected>
+10 ثواني
+</option>
+
+<option value="30">
+30 ثانية
+</option>
+
+</select>
+
+
+<label>
+ملاحظات
+</label>
+
+<textarea id="notes"
+placeholder="ملاحظات تعليمية..."></textarea>
+
+
+<button class="green"
+        onclick="saveConfig()">
+💾 حفظ Configuration
+</button>
+
+
+<button class="secondary"
+        onclick="loadConfig()">
+↻ استرجاع Configuration
+</button>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+📄 Configuration الحالية
+</h2>
+
+<pre id="configView">
+{}
+</pre>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= LOGS ================= -->
+
+<section id="logs" class="page">
+
+<div class="panel">
+
+<h2>
+📋 سجل الأحداث
+</h2>
+
+<div id="mainLog"
+     class="log">
+</div>
+
+<br>
+
+<button class="danger"
+        onclick="clearLog()">
+🗑️ مسح السجل
+</button>
+
+</div>
+
+</section>
+
 
 </div>
 
 
 <div class="footer">
-    Educational Cybersecurity Simulator — Safe Demo
+
+Educational Cybersecurity Simulator<br>
+Safe Learning Environment
+
 </div>
+
 
 
 <script>
 
+/* =====================================
+   DATA
+===================================== */
+
 let commandCount = 0;
 
 
-/* إضافة حدث إلى السجل */
+/* =====================================
+   PAGE NAVIGATION
+===================================== */
 
-function addLog(message) {
+function showPage(pageId, button) {
 
-    const log = document.getElementById("log");
+    const pages =
+        document.querySelectorAll(".page");
 
-    const time = new Date().toLocaleTimeString();
+    pages.forEach(function(page) {
 
-    const line = document.createElement("div");
+        page.classList.remove("active");
 
-    line.className = "log-line";
+    });
 
-    line.textContent =
-        "[" + time + "] " + message;
 
-    log.prepend(line);
+    const selected =
+        document.getElementById(pageId);
+
+    if (selected) {
+
+        selected.classList.add("active");
+
+    }
+
+
+    const buttons =
+        document.querySelectorAll(".nav button");
+
+    buttons.forEach(function(btn) {
+
+        btn.classList.remove("active");
+
+    });
+
+
+    if (button) {
+
+        button.classList.add("active");
+
+    }
+
 }
 
 
-/* إرسال أمر تجريبي */
+/* =====================================
+   LOG SYSTEM
+===================================== */
+
+function addLog(message) {
+
+    const time =
+        new Date().toLocaleTimeString();
+
+    const text =
+        "[" + time + "] " + message;
+
+
+    const logs = [
+
+        document.getElementById("mainLog"),
+
+        document.getElementById("homeLog")
+
+    ];
+
+
+    logs.forEach(function(log) {
+
+        if (!log) return;
+
+        const line =
+            document.createElement("div");
+
+        line.className = "log-line";
+
+        line.textContent = text;
+
+        log.prepend(line);
+
+    });
+
+}
+
+
+/* =====================================
+   COMMAND SYSTEM
+===================================== */
 
 function sendCommand(client, command) {
 
     commandCount++;
 
-    document.getElementById("commandCount").textContent =
-        commandCount;
+    document.getElementById(
+        "commandCount"
+    ).textContent = commandCount;
+
 
     addLog(
         "C2 → " +
@@ -418,6 +941,7 @@ function sendCommand(client, command) {
         " : " +
         command
     );
+
 
     setTimeout(function() {
 
@@ -427,24 +951,31 @@ function sendCommand(client, command) {
         );
 
     }, 500);
+
 }
 
 
-/* إرسال رسالة آمنة */
+/* =====================================
+   MESSAGE
+===================================== */
 
 function messageClient(client) {
 
     const message =
-        prompt("اكتب رسالة تعليمية:");
+        prompt(
+            "اكتب رسالة تعليمية:"
+        );
 
-    if (!message) {
-        return;
-    }
+
+    if (!message) return;
+
 
     commandCount++;
 
-    document.getElementById("commandCount").textContent =
-        commandCount;
+    document.getElementById(
+        "commandCount"
+    ).textContent = commandCount;
+
 
     addLog(
         "C2 → " +
@@ -452,30 +983,38 @@ function messageClient(client) {
         " : SHOW_MESSAGE"
     );
 
+
     setTimeout(function() {
 
         addLog(
             client +
-            " : تم عرض الرسالة التجريبية"
+            " : تم عرض الرسالة التجريبية: " +
+            message
         );
 
     }, 500);
+
 }
 
 
-/* تشغيل Plugin */
+/* =====================================
+   PLUGINS
+===================================== */
 
 function runPlugin(plugin) {
 
     commandCount++;
 
-    document.getElementById("commandCount").textContent =
-        commandCount;
+    document.getElementById(
+        "commandCount"
+    ).textContent = commandCount;
+
 
     addLog(
         "Plugin started : " +
         plugin
     );
+
 
     setTimeout(function() {
 
@@ -485,48 +1024,216 @@ function runPlugin(plugin) {
         );
 
     }, 500);
+
 }
 
 
-/* حفظ الإعدادات */
+/* =====================================
+   CALCULATOR
+===================================== */
+
+function runCalculator() {
+
+    const first =
+        prompt("الرقم الأول:");
+
+    if (first === null) return;
+
+
+    const second =
+        prompt("الرقم الثاني:");
+
+    if (second === null) return;
+
+
+    const a =
+        Number(first);
+
+    const b =
+        Number(second);
+
+
+    if (
+        Number.isNaN(a) ||
+        Number.isNaN(b)
+    ) {
+
+        alert(
+            "يرجى إدخال أرقام صحيحة"
+        );
+
+        return;
+
+    }
+
+
+    const result =
+        a + b;
+
+
+    commandCount++;
+
+    document.getElementById(
+        "commandCount"
+    ).textContent = commandCount;
+
+
+    addLog(
+        "Calculator Plugin : " +
+        a +
+        " + " +
+        b +
+        " = " +
+        result
+    );
+
+
+    alert(
+        "النتيجة = " +
+        result
+    );
+
+}
+
+
+/* =====================================
+   CONFIGURATION
+===================================== */
 
 function saveConfig() {
 
-    const name =
-        document.getElementById("simName").value;
+    const config = {
 
-    const interval =
-        document.getElementById("interval").value;
+        name:
+            document.getElementById(
+                "simName"
+            ).value,
+
+        interval:
+            document.getElementById(
+                "interval"
+            ).value,
+
+        notes:
+            document.getElementById(
+                "notes"
+            ).value
+
+    };
+
 
     localStorage.setItem(
-        "simulation_name",
-        name
+        "educational_c2_config",
+        JSON.stringify(config)
     );
 
-    localStorage.setItem(
-        "simulation_interval",
-        interval
-    );
+
+    updateConfigView(config);
+
 
     addLog(
         "Configuration saved"
     );
 
-    alert("تم حفظ Configuration");
+
+    alert(
+        "تم حفظ Configuration بنجاح"
+    );
+
 }
 
 
-/* مسح السجل */
+function loadConfig() {
+
+    const saved =
+        localStorage.getItem(
+            "educational_c2_config"
+        );
+
+
+    if (!saved) {
+
+        alert(
+            "لا توجد Configuration محفوظة"
+        );
+
+        return;
+
+    }
+
+
+    const config =
+        JSON.parse(saved);
+
+
+    document.getElementById(
+        "simName"
+    ).value =
+        config.name || "";
+
+
+    document.getElementById(
+        "interval"
+    ).value =
+        config.interval || "10";
+
+
+    document.getElementById(
+        "notes"
+    ).value =
+        config.notes || "";
+
+
+    updateConfigView(config);
+
+
+    addLog(
+        "Configuration loaded"
+    );
+
+}
+
+
+function updateConfigView(config) {
+
+    document.getElementById(
+        "configView"
+    ).textContent =
+        JSON.stringify(
+            config,
+            null,
+            2
+        );
+
+}
+
+
+/* =====================================
+   CLEAR LOG
+===================================== */
 
 function clearLog() {
 
-    document.getElementById("log").innerHTML = "";
+    document.getElementById(
+        "mainLog"
+    ).innerHTML = "";
 
-    addLog("Log cleared");
+
+    document.getElementById(
+        "homeLog"
+    ).innerHTML = "";
+
+
+    addLog(
+        "Log cleared"
+    );
+
 }
 
 
-/* بداية المحاكاة */
+/* =====================================
+   START
+===================================== */
 
 addLog(
     "Educational C2 Simulator started"
@@ -535,6 +1242,35 @@ addLog(
 addLog(
     "3 demo clients loaded"
 );
+
+addLog(
+    "Safe simulation mode enabled"
+);
+
+
+const savedConfig =
+    localStorage.getItem(
+        "educational_c2_config"
+    );
+
+
+if (savedConfig) {
+
+    try {
+
+        updateConfigView(
+            JSON.parse(savedConfig)
+        );
+
+    } catch (error) {
+
+        console.log(
+            "Configuration error"
+        );
+
+    }
+
+}
 
 </script>
 
