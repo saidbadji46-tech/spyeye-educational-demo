@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Educational C2 Demo</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Tahoma, sans-serif;
+    background: #10151c;
+    color: #e8edf3;
+}
+
+.header {
+    background: #18212b;
+    padding: 18px;
+    text-align: center;
+    border-bottom: 1px solid #303b47;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.header p {
+    margin: 7px 0 0;
+    color: #9eabb8;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+.warning {
+    background: #2a2110;
+    border: 1px solid #71551b;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: #f0cf76;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: #18212b;
+    border: 1px solid #303b47;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #aebbc8;
+}
+
+.number {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.online {
+    color: #50d890;
+}
+
+.offline {
+    color: #ef7272;
+}
+
+.panel {
+    background: #18212b;
+    border: 1px solid #303b47;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+
+.panel h2 {
+    margin-top: 0;
+}
+
+.clients {
+    display: grid;
+    gap: 10px;
+}
+
+.client {
+    background: #111820;
+    border: 1px solid #303b47;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.client-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.client-name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.badge.online {
+    background: #123a28;
+}
+
+.badge.offline {
+    background: #3b2020;
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+button {
+    border: none;
+    border-radius: 7px;
+    padding: 9px 14px;
+    cursor: pointer;
+    background: #2867b2;
+    color: white;
+    font-size: 14px;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+button.secondary {
+    background: #384653;
+}
+
+button.danger {
+    background: #8d3434;
+}
+
+input, textarea, select {
+    width: 100%;
+    background: #10151c;
+    color: white;
+    border: 1px solid #3a4652;
+    border-radius: 7px;
+    padding: 10px;
+    margin-top: 7px;
+    margin-bottom: 12px;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.log {
+    background: #0b1015;
+    border-radius: 7px;
+    padding: 12px;
+    height: 220px;
+    overflow-y: auto;
+    font-family: monospace;
+    direction: ltr;
+    text-align: left;
+}
+
+.log-line {
+    padding: 4px 0;
+    border-bottom: 1px solid #18212b;
+}
+
+.plugin {
+    background: #111820;
+    border: 1px solid #303b47;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.footer {
+    text-align: center;
+    color: #71808e;
+    padding: 20px;
+    font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Educational C2 Simulator</h1>
+    <p>محاكاة تعليمية لبنية Client / Server / Plugins</p>
+</div>
+
+<div class="container">
+
+    <div class="warning">
+        ⚠️ هذه محاكاة تعليمية فقط. لا تتصل بأجهزة حقيقية ولا تجمع كلمات مرور أو بيانات شخصية.
+    </div>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>إجمالي العملاء</h3>
+            <div class="number" id="totalClients">3</div>
+        </div>
+
+        <div class="card">
+            <h3>متصل الآن</h3>
+            <div class="number online" id="onlineClients">2</div>
+        </div>
+
+        <div class="card">
+            <h3>غير متصل</h3>
+            <div class="number offline" id="offlineClients">1</div>
+        </div>
+
+        <div class="card">
+            <h3>الأوامر المنفذة</h3>
+            <div class="number" id="commandCount">0</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <h2>🖥️ العملاء التجريبيون</h2>
+
+        <div class="clients">
+
+            <div class="client">
+                <div class="client-top">
+                    <div class="client-name">PC-001</div>
+                    <span class="badge online">ONLINE</span>
+                </div>
+
+                <p>Windows Demo Client</p>
+
+                <div class="buttons">
+                    <button onclick="sendCommand('PC-001','PING')">PING</button>
+                    <button onclick="sendCommand('PC-001','STATUS')">STATUS</button>
+                    <button class="secondary"
+                        onclick="messageClient('PC-001')">
+                        رسالة
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="client">
+                <div class="client-top">
+                    <div class="client-name">PC-002</div>
+                    <span class="badge online">ONLINE</span>
+                </div>
+
+                <p>Linux Demo Client</p>
+
+                <div class="buttons">
+                    <button onclick="sendCommand('PC-002','PING')">PING</button>
+                    <button onclick="sendCommand('PC-002','STATUS')">STATUS</button>
+                    <button class="secondary"
+                        onclick="messageClient('PC-002')">
+                        رسالة
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="client">
+                <div class="client-top">
+                    <div class="client-name">PC-003</div>
+                    <span class="badge offline">OFFLINE</span>
+                </div>
+
+                <p>Demo Client</p>
+
+                <div class="buttons">
+                    <button onclick="sendCommand('PC-003','PING')">PING</button>
+                    <button onclick="sendCommand('PC-003','STATUS')">STATUS</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="panel">
+
+        <h2>⚙️ Configuration</h2>
+
+        <label>اسم المحاكاة</label>
+        <input id="simName" value="Educational C2">
+
+        <label>الفاصل الزمني للمحاكاة</label>
+        <select id="interval">
+            <option value="5">5 ثواني</option>
+            <option value="10" selected>10 ثواني</option>
+            <option value="30">30 ثانية</option>
+        </select>
+
+        <button onclick="saveConfig()">حفظ Configuration</button>
+
+    </div>
+
+
+    <div class="panel">
+
+        <h2>🧩 Plugins</h2>
+
+        <div class="plugin">
+            <strong>Hello Plugin</strong>
+            <p>يعرض رسالة تعليمية.</p>
+            <button onclick="runPlugin('Hello Plugin')">
+                تشغيل
+            </button>
+        </div>
+
+        <div class="plugin">
+            <strong>Calculator Plugin</strong>
+            <p>محاكاة Plugin للحساب فقط.</p>
+            <button onclick="runPlugin('Calculator Plugin')">
+                تشغيل
+            </button>
+        </div>
+
+        <div class="plugin">
+            <strong>System Info Demo</strong>
+            <p>يعرض معلومات ثابتة وهمية.</p>
+            <button onclick="runPlugin('System Info Demo')">
+                تشغيل
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <h2>📋 سجل الأحداث</h2>
+
+        <div class="log" id="log"></div>
+
+        <br>
+
+        <button class="danger" onclick="clearLog()">
+            مسح السجل
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="footer">
+    Educational Cybersecurity Simulator — Safe Demo
+</div>
+
+
+<script>
+
+let commandCount = 0;
+
+
+/* إضافة حدث إلى السجل */
+
+function addLog(message) {
+
+    const log = document.getElementById("log");
+
+    const time = new Date().toLocaleTimeString();
+
+    const line = document.createElement("div");
+
+    line.className = "log-line";
+
+    line.textContent =
+        "[" + time + "] " + message;
+
+    log.prepend(line);
+}
+
+
+/* إرسال أمر تجريبي */
+
+function sendCommand(client, command) {
+
+    commandCount++;
+
+    document.getElementById("commandCount").textContent =
+        commandCount;
+
+    addLog(
+        "C2 → " +
+        client +
+        " : " +
+        command
+    );
+
+    setTimeout(function() {
+
+        addLog(
+            client +
+            " → C2 : Response received"
+        );
+
+    }, 500);
+}
+
+
+/* إرسال رسالة آمنة */
+
+function messageClient(client) {
+
+    const message =
+        prompt("اكتب رسالة تعليمية:");
+
+    if (!message) {
+        return;
+    }
+
+    commandCount++;
+
+    document.getElementById("commandCount").textContent =
+        commandCount;
+
+    addLog(
+        "C2 → " +
+        client +
+        " : SHOW_MESSAGE"
+    );
+
+    setTimeout(function() {
+
+        addLog(
+            client +
+            " : تم عرض الرسالة التجريبية"
+        );
+
+    }, 500);
+}
+
+
+/* تشغيل Plugin */
+
+function runPlugin(plugin) {
+
+    commandCount++;
+
+    document.getElementById("commandCount").textContent =
+        commandCount;
+
+    addLog(
+        "Plugin started : " +
+        plugin
+    );
+
+    setTimeout(function() {
+
+        addLog(
+            "Plugin finished : " +
+            plugin
+        );
+
+    }, 500);
+}
+
+
+/* حفظ الإعدادات */
+
+function saveConfig() {
+
+    const name =
+        document.getElementById("simName").value;
+
+    const interval =
+        document.getElementById("interval").value;
+
+    localStorage.setItem(
+        "simulation_name",
+        name
+    );
+
+    localStorage.setItem(
+        "simulation_interval",
+        interval
+    );
+
+    addLog(
+        "Configuration saved"
+    );
+
+    alert("تم حفظ Configuration");
+}
+
+
+/* مسح السجل */
+
+function clearLog() {
+
+    document.getElementById("log").innerHTML = "";
+
+    addLog("Log cleared");
+}
+
+
+/* بداية المحاكاة */
+
+addLog(
+    "Educational C2 Simulator started"
+);
+
+addLog(
+    "3 demo clients loaded"
+);
+
+</script>
+
+</body>
+</html>
