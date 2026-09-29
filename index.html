@@ -290,6 +290,18 @@ textarea{
     font-size:13px
 }
 
+
+.client-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:15px 0}
+.detail-stat{background:#101820;border:1px solid #303c48;border-radius:9px;padding:15px}
+.detail-stat .label{color:#9caab7;font-size:13px}.detail-stat .value{font-size:25px;font-weight:bold;margin-top:6px}
+.detail-actions{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}
+.history{background:#080d12;border-radius:8px;padding:12px;max-height:360px;overflow-y:auto;direction:ltr;text-align:left;font-family:monospace}
+.history-line{padding:8px 4px;border-bottom:1px solid #18222c}.history-time{color:#7e8b98}
+.chart{display:flex;align-items:flex-end;gap:8px;min-height:170px;padding:15px 5px 5px;border:1px solid #303c48;border-radius:9px;background:#101820;overflow-x:auto}
+.bar-wrap{min-width:42px;text-align:center;display:flex;flex-direction:column;justify-content:flex-end;height:145px}
+.bar{width:28px;margin:auto;background:#2867b2;border-radius:5px 5px 0 0;min-height:3px}
+.bar-label{font-size:11px;color:#9caab7;margin-top:5px}.bar-value{font-size:11px;margin-bottom:3px}
+
 @media(max-width:600px){
     .header h1{font-size:20px}
     .container{padding:12px}
@@ -474,6 +486,17 @@ textarea{
 </section>
 
 
+<!-- CLIENT DETAIL -->
+
+<section id="clientDetail" class="page">
+<div class="panel">
+<h2>👤 تفاصيل Client</h2>
+<div class="buttons"><button class="secondary" onclick="backToClients()">🔙 العودة إلى العملاء</button></div>
+<div id="clientDetailContent"></div>
+</div>
+</section>
+
+
 <!-- PLUGINS -->
 
 <section id="plugins" class="page">
@@ -608,6 +631,7 @@ Safe Learning Environment
 let clients = [];
 
 let commandCount = 0;
+let selectedClientId = null;
 
 
 /* =========================================
@@ -672,6 +696,11 @@ function loadClients(){
 
     }
 
+    clients.forEach(function(client){
+        if(!Array.isArray(client.history)) client.history = [];
+    });
+
+    saveClients();
     renderClients();
     updateStats();
 
@@ -834,6 +863,11 @@ function renderClients(){
             <div class="buttons">
 
                 <button
+                    onclick="showClientDetail('${escapeJS(client.id)}')">
+                    👤 التفاصيل
+                </button>
+
+                <button
                     onclick="sendCommand('${escapeJS(client.id)}','PING')">
                     PING
                 </button>
@@ -951,8 +985,8 @@ function addClient(){
         id:name,
         os:os,
         status:"ONLINE",
-        notes:notes
-
+        notes:notes,
+        history:[]
     });
 
 
@@ -1007,6 +1041,10 @@ function deleteClient(id){
 
         });
 
+    if(selectedClientId === id){
+        selectedClientId = null;
+    }
+
 
     saveClients();
 
@@ -1048,6 +1086,10 @@ function toggleStatus(id){
     renderClients();
 
     updateStats();
+
+    if(selectedClientId === id){
+        renderClientDetail();
+    }
 
 
     addLog(
@@ -1110,35 +1152,55 @@ function updateStats(){
    COMMANDS
 ========================================= */
 
+function recordClientHistory(clientId, action, result){
+
+    const client = clients.find(function(c){ return c.id === clientId; });
+    if(!client) return;
+
+    if(!Array.isArray(client.history)) client.history = [];
+
+    client.history.unshift({
+        time:new Date().toLocaleString(),
+        action:action,
+        result:result || "Simulation event"
+    });
+
+    if(client.history.length > 100){
+        client.history = client.history.slice(0,100);
+    }
+
+    saveClients();
+}
+
 function sendCommand(client,command){
 
     commandCount++;
 
+    document.getElementById("commandCount").textContent = commandCount;
 
-    document.getElementById(
-        "commandCount"
-    ).textContent =
-        commandCount;
+    recordClientHistory(client,command,"Command sent");
 
+    addLog("C2 → " + client + " : " + command);
 
-    addLog(
-        "C2 → " +
-        client +
-        " : " +
-        command
-    );
-
+    if(selectedClientId === client) renderClientDetail();
 
     setTimeout(function(){
 
-        addLog(
-            client +
-            " → C2 : Response received"
-        );
+        const result = command === "PING"
+            ? "PING response received"
+            : "Response received";
+
+        recordClientHistory(client,command,result);
+        addLog(client + " → C2 : " + result);
+
+        if(selectedClientId === client) renderClientDetail();
 
     },500);
 
 }
+
+
+
 
 
 /* =========================================
@@ -1147,40 +1209,193 @@ function sendCommand(client,command){
 
 function messageClient(client){
 
-    const message =
-        prompt(
-            "اكتب رسالة تعليمية:"
-        );
-
-
+    const message = prompt("اكتب رسالة تعليمية:");
     if(!message) return;
 
-
     commandCount++;
+    document.getElementById("commandCount").textContent = commandCount;
 
+    recordClientHistory(client,"SHOW_MESSAGE","Message: " + message);
 
-    document.getElementById(
-        "commandCount"
-    ).textContent =
-        commandCount;
+    addLog("C2 → " + client + " : SHOW_MESSAGE");
 
-
-    addLog(
-        "C2 → " +
-        client +
-        " : SHOW_MESSAGE"
-    );
-
+    if(selectedClientId === client) renderClientDetail();
 
     setTimeout(function(){
 
-        addLog(
-            client +
-            " : Message displayed"
-        );
+        recordClientHistory(client,"SHOW_MESSAGE","Message displayed");
+        addLog(client + " : Message displayed");
+
+        if(selectedClientId === client) renderClientDetail();
 
     },500);
 
+}
+
+
+
+
+
+/* =========================================
+   CLIENT DETAIL / PHASE 4
+========================================= */
+
+function showClientDetail(id){
+
+    const client = clients.find(function(c){ return c.id === id; });
+    if(!client) return;
+
+    if(!Array.isArray(client.history)){
+        client.history = [];
+        saveClients();
+    }
+
+    selectedClientId = id;
+    showPage("clientDetail");
+    renderClientDetail();
+}
+
+function backToClients(){
+    selectedClientId = null;
+    showPage("clients");
+    renderClients();
+}
+
+function renderClientDetail(){
+
+    const container = document.getElementById("clientDetailContent");
+    if(!container) return;
+
+    const client = clients.find(function(c){ return c.id === selectedClientId; });
+
+    if(!client){
+        container.innerHTML = '<div class="empty">Client غير موجود</div>';
+        return;
+    }
+
+    if(!Array.isArray(client.history)) client.history = [];
+
+    const total = client.history.length;
+    const commands = client.history.filter(function(item){
+        return item.action !== "SHOW_MESSAGE";
+    }).length;
+    const messages = client.history.filter(function(item){
+        return item.action === "SHOW_MESSAGE";
+    }).length;
+    const responses = client.history.filter(function(item){
+        return String(item.result || "").toLowerCase().includes("response") ||
+               String(item.result || "").toLowerCase().includes("displayed");
+    }).length;
+
+    let historyHTML = "";
+
+    if(client.history.length === 0){
+        historyHTML = '<div class="empty">لا توجد أحداث لهذا Client بعد</div>';
+    }else{
+        client.history.slice(0,20).forEach(function(item){
+            historyHTML += `
+                <div class="history-line">
+                    <span class="history-time">[${escapeHTML(item.time)}]</span>
+                    <strong>${escapeHTML(item.action)}</strong>
+                    — ${escapeHTML(item.result || "")}
+                </div>`;
+        });
+    }
+
+    const chartData = [
+        {label:"Commands",value:commands},
+        {label:"Messages",value:messages},
+        {label:"Responses",value:responses}
+    ];
+
+    const max = Math.max(1,...chartData.map(function(item){ return item.value; }));
+    let chartHTML = "";
+
+    chartData.forEach(function(item){
+        const height = Math.max(3,Math.round((item.value / max) * 115));
+        chartHTML += `
+            <div class="bar-wrap">
+                <div class="bar-value">${item.value}</div>
+                <div class="bar" style="height:${height}px"></div>
+                <div class="bar-label">${item.label}</div>
+            </div>`;
+    });
+
+    const badgeClass = client.status === "ONLINE" ? "online" : "offline";
+
+    container.innerHTML = `
+
+        <div class="client-top">
+            <div>
+                <div class="client-name">${escapeHTML(client.id)}</div>
+                <div class="info">
+                    النظام: ${escapeHTML(client.os)}<br>
+                    الملاحظات: ${escapeHTML(client.notes || "لا توجد")}
+                </div>
+            </div>
+            <span class="badge ${badgeClass}">${escapeHTML(client.status)}</span>
+        </div>
+
+        <div class="client-detail-grid">
+
+            <div class="detail-stat">
+                <div class="label">إجمالي الأحداث</div>
+                <div class="value">${total}</div>
+            </div>
+
+            <div class="detail-stat">
+                <div class="label">Commands</div>
+                <div class="value">${commands}</div>
+            </div>
+
+            <div class="detail-stat">
+                <div class="label">Messages</div>
+                <div class="value">${messages}</div>
+            </div>
+
+            <div class="detail-stat">
+                <div class="label">Responses</div>
+                <div class="value">${responses}</div>
+            </div>
+
+        </div>
+
+        <div class="detail-actions">
+            <button onclick="sendCommand('${escapeJS(client.id)}','PING')">PING</button>
+            <button onclick="sendCommand('${escapeJS(client.id)}','STATUS')">STATUS</button>
+            <button class="secondary" onclick="messageClient('${escapeJS(client.id)}')">💬 رسالة</button>
+            <button class="orange" onclick="toggleStatus('${escapeJS(client.id)}');renderClientDetail();">تغيير الحالة</button>
+        </div>
+
+        <h3>📊 إحصائيات Client</h3>
+        <div class="chart">${chartHTML}</div>
+
+        <br>
+
+        <h3>📋 سجل هذا Client</h3>
+        <div class="history">${historyHTML}</div>
+
+        <br>
+
+        <button class="danger" onclick="clearClientHistory('${escapeJS(client.id)}')">
+            🗑️ مسح سجل Client
+        </button>
+    `;
+}
+
+function clearClientHistory(id){
+
+    const client = clients.find(function(c){ return c.id === id; });
+    if(!client) return;
+
+    const ok = confirm("هل تريد مسح سجل " + id + " فقط؟");
+    if(!ok) return;
+
+    client.history = [];
+    saveClients();
+
+    addLog("Client history cleared : " + id);
+    renderClientDetail();
 }
 
 
